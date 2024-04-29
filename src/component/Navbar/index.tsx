@@ -10,10 +10,10 @@ export const Navbar: FC = () => {
         <li>About</li>
         <li>Contact</li>
       </ul>
-      <div className={styles.navList}>
-        <div>Get Started</div>
-        <div>Login</div>
-      </div>
+      <ul className={styles.navList}>
+        <li>Get Started</li>
+        <li>Login</li>
+      </ul>
     </nav>
   );
 };
