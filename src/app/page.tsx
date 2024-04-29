@@ -1,4 +1,4 @@
-import { Card, Navbar } from "@component";
+import { Button, Card, Footer, Navbar } from "@component";
 import Image from "next/image";
 import landingPagePic from "@/assets/Calendar.webp";
 import styles from "./page.module.css";
@@ -15,7 +15,7 @@ export default function Home() {
             Beatae autem excepturi, quae voluptatum voluptates molestiae culpa
             quibusdam. Nisi, deserunt commodi?
           </h3>
-          <button>Learn More</button>
+          <Button label="Get Started" />
         </div>
         <div className={styles.LandingPageImageWrapper}>
           <Image
@@ -32,9 +32,7 @@ export default function Home() {
         <Card title="Free" />
       </div>
 
-      <footer className={styles.footer}>
-        <p>Footer</p>
-      </footer>
+      <Footer />
     </main>
   );
 }

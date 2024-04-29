@@ -1,3 +1,4 @@
+import { Button } from "@component";
 import styles from "./styles.module.css";
 import { FC } from "react";
 
@@ -6,8 +7,7 @@ type Props = {
 };
 
 const proDetails = {
-  description:
-    "For teams who need advanced features such as reporting, meeting distribution, and automations.",
+  description: "For teams who need advanced features.",
   price: "99 Kr",
   buttonText: "Get Pro",
   benefits: [
@@ -30,7 +30,7 @@ const freeDetails = {
   ],
 };
 
-export const Card: FC<Props> = ({ title = "Pro" }) => {
+export const Card: FC<Props> = ({ title }) => {
   const details = title === "Pro" ? proDetails : freeDetails;
 
   return (
@@ -41,7 +41,7 @@ export const Card: FC<Props> = ({ title = "Pro" }) => {
         <h2>{details.price}</h2>
         <p>/month</p>
       </div>
-      <button>{details.buttonText}</button>
+      <Button label={details.buttonText} />
       <ul className={styles.cardBenefits}>
         {details.benefits.map((benefit, index) => (
           <li key={index}>{benefit}</li>
