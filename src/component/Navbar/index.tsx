@@ -1,18 +1,19 @@
+"use client";
 import { FC } from "react";
 import styles from "./styles.module.css";
-import logo from "@/assets/logo.png";
-import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export const Navbar: FC = () => {
+  const { push } = useRouter();
   return (
     <nav className={styles.container}>
       <div className={styles.navTitle}>
         <h3>BookSmart</h3>
       </div>
       <ul className={styles.navList}>
-        <li>Home</li>
-        <li>About</li>
-        <li>Contact</li>
+        <li onClick={() => push("/")}>Home</li>
+        <li onClick={() => push("/")}>About</li>
+        <li onClick={() => push("/")}>Contact</li>
       </ul>
       <ul className={styles.navList}>
         <li>Get Started</li>

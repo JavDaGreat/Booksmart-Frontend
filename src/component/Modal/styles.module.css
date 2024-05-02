@@ -1,0 +1,42 @@
+.modal {
+  position: fixed;
+  width: 398px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border: none;
+  border-radius: 4px;
+  max-height: 566px;
+  box-shadow: 0px 0px 8px 0px #21243114;
+
+  &::backdrop {
+    background: hsl(0 0% 0% / 40%);
+  }
+
+  .headerWrapper {
+    padding: 16px;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .childWrapper {
+    width: 100%;
+    padding: 32px;
+    max-height: 390px;
+    overflow: auto;
+    word-break: keep-all;
+  }
+
+  .actionBar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 24px;
+    align-items: center;
+  }
+}
