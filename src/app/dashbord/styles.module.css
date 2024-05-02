@@ -1,0 +1,9 @@
+.calendarWrapper {
+  padding: 32px;
+}
+
+.footerWrapper {
+  width: 100vw;
+  position: fixed;
+  bottom: 0;
+}

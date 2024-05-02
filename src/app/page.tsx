@@ -28,8 +28,8 @@ export default function Home() {
       </div>
 
       <div className={styles.cards}>
-        <Card title="Pro" />
         <Card title="Free" />
+        <Card title="Pro" />
       </div>
 
       <Footer />
