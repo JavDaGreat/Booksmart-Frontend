@@ -1,16 +1,16 @@
-import { FC } from "react";
+import { FC, InputHTMLAttributes } from "react";
 import styles from "./styles.module.css";
 
 type Props = {
-  label: string;
-  type?: "text" | "password" | "email" | "number" | "tel" | "textarea";
-};
+  type: "text" | "password" | "email" | "number" | "tel" | "textarea";
+  label?: string;
+} & InputHTMLAttributes<HTMLInputElement>;
 
-export const Input: FC<Props> = ({ label, type }) => {
+export const Input: FC<Props> = ({ label, type, ...props }) => {
   return (
     <div className={styles.container}>
-      <label>{label}</label>
-      <input type={type} className={styles.input} />
+      {label && <label>{label}:</label>}
+      <input {...props} type={type} className={styles.input} />
     </div>
   );
 };

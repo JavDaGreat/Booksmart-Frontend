@@ -35,3 +35,14 @@
     word-break: keep-all;
   }
 }
+.iconWrapper {
+  display: flex;
+  gap: 12px;
+}
+
+.actionBar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px;
+  gap: 12px;
+}

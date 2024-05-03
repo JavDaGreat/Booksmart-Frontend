@@ -1,10 +1,13 @@
 "use client";
-import { Footer, Navbar, Modal } from "@/component";
+import { Footer, Navbar, Modal, Input } from "@/component";
 import { Calendar, dayjsLocalizer } from "react-big-calendar";
 import dayjs from "dayjs";
 import "react-big-calendar/lib/sass/styles.scss";
 import { useState } from "react";
 import "./styles.css";
+import { Edit } from "@/assets/icons";
+import { title } from "process";
+import { on } from "events";
 
 type Event = {
   id: number;
@@ -16,28 +19,22 @@ type Event = {
   Guests?: string[];
 };
 
+type ModalType = "new" | "edit" | "show" | null;
+
 export default function Page() {
   const localizer = dayjsLocalizer(dayjs);
-  const [isOpen, setIsOpen] = useState(false);
+  const [showModal, setShowModal] = useState<ModalType>(null);
   const [calEvent, setCalEvent] = useState<Event | null>(null);
+  const [myEvents, setEvents] = useState<Event[]>([
+    {
+      id: 2,
+      title: "Team lead meeting",
+      start: new Date(2024, 4, 4, 8, 30, 0),
+      end: new Date(2024, 4, 4, 12, 30, 0),
+    },
+  ]);
   const events = [
-    {
-      id: 0,
-      title: "Board meeting",
-      start: new Date(2024, 4, 3, 9, 0, 0),
-      end: new Date(2024, 4, 3, 13, 0, 0),
-      desc: "This is a board meeting.",
-      Creator: "Javad S.",
-      Guests: ["Jane Doe", "John Smith"],
-    },
-    {
-      id: 1,
-      title: "MS training",
-      allDay: true,
-      start: new Date(2024, 4, 4, 9, 0, 0),
-      end: new Date(2024, 4, 4, 13, 0, 0),
-      Creator: "John Doe",
-    },
+    ,
     {
       id: 2,
       title: "Team lead meeting",
@@ -53,9 +50,57 @@ export default function Page() {
   ];
 
   const test = (calEvent: Event) => {
-    isOpen ? setIsOpen(false) : setIsOpen(true);
-    console.log(calEvent);
+    setShowModal("show");
     setCalEvent(calEvent);
+  };
+
+  const modalConfig = {
+    show: {
+      title: calEvent?.title,
+      children: (
+        <>
+          <p>{`${dayjs(calEvent?.start).format(
+            "dddd, MMMM D ⋅ h:mm A"
+          )} - ${dayjs(calEvent?.end).format("h:mm A")}`}</p>
+          <p>{calEvent?.desc}</p>
+          <h3>Guests:</h3>
+          <ul>
+            {calEvent?.Guests?.map((guest, index) => (
+              <li key={index}>{guest}</li>
+            ))}
+          </ul>
+          <h3>Created By:</h3>
+          <span>{calEvent?.Creator}</span>
+        </>
+      ),
+      onClose: () => setShowModal(null),
+      isOpen: showModal === "show",
+      onEdit: () => setShowModal("edit"),
+      type: "show",
+    },
+    edit: {
+      title: "Edit Event",
+      children: (
+        <>
+          <Input label="Title" type="text" value={calEvent?.title} />
+        </>
+      ),
+      onClose: () => setShowModal(null),
+      isOpen: showModal === "edit",
+      type: "edit",
+    },
+    new: {
+      title: "New Event",
+      children: <Edit />,
+      onClose: () => setShowModal(null),
+      isOpen: showModal === "new",
+    },
+    type: "new",
+  };
+  const modalProps = showModal && modalConfig[showModal];
+
+  const addEvent = () => {
+    setShowModal("new");
   };
 
   return (
@@ -66,32 +111,17 @@ export default function Page() {
           localizer={localizer}
           startAccessor="start"
           endAccessor="end"
-          events={events}
+          events={myEvents}
           style={{ height: 500 }}
           showMultiDayTimes
           onSelectEvent={test}
+          onSelectSlot={addEvent}
         />
       </div>
       <div className="footerWrapper">
         <Footer />
       </div>
-      <Modal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        title={calEvent?.title}>
-        <p>{`${dayjs(calEvent?.start).format(
-          "dddd, MMMM D ⋅ h:mm A"
-        )} - ${dayjs(calEvent?.end).format("h:mm A")}`}</p>
-        <p>{calEvent?.desc}</p>
-        <h3>Guests:</h3>
-        <ul>
-          {calEvent?.Guests?.map((guest, index) => (
-            <li key={index}>{guest}</li>
-          ))}
-        </ul>
-        <h3>Created By:</h3>
-        <span>{calEvent?.Creator}</span>
-      </Modal>
+      <Modal {...modalProps} />
     </div>
   );
 }
