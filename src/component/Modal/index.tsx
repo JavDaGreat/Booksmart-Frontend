@@ -7,7 +7,7 @@ import { Close } from "@/assets/icons";
 
 type Props = {
   children: ReactNode;
-  title: string;
+  title: string | undefined;
   onClose: () => void;
   isOpen: boolean;
 };
@@ -24,6 +24,7 @@ export const Modal: FC<Props> = ({ children, title, onClose, isOpen }) => {
       <div className={styles.headerWrapper}>
         <div className={styles.header}>
           <h2>{title}</h2>
+
           <Close onClick={onClose} />
         </div>
       </div>

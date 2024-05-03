@@ -1,10 +1,22 @@
-export const Instagram = () => {
+type SvgProps = {
+  color?: string;
+  size?: number;
+  onClick?: () => void;
+};
+
+export const Instagram = ({
+  color = "currentColor",
+  size = 24,
+  onClick,
+}: SvgProps) => {
   return (
     <svg
+      style={{ cursor: "pointer" }}
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 14 14">
+      width={size}
+      height={size}
+      viewBox="0 0 14 14"
+      onClick={onClick}>
       <g
         fill="none"
         stroke="white"
@@ -17,13 +29,15 @@ export const Instagram = () => {
     </svg>
   );
 };
-export const X = () => {
+export const X = ({ color = "currentColor", size = 24, onClick }: SvgProps) => {
   return (
     <svg
+      style={{ cursor: "pointer" }}
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
-      viewBox="0 0 24 24">
+      viewBox="0 0 24 24"
+      onClick={onClick}>
       <path
         fill="white"
         d="M8 2H1l8.26 11.015L1.45 22H4.1l6.388-7.349L16 22h7l-8.608-11.478L21.8 2h-2.65l-5.986 6.886zm9 18L5 4h2l12 16z"
@@ -31,18 +45,14 @@ export const X = () => {
     </svg>
   );
 };
-type CloseProps = {
-  color?: string;
-  size?: number;
-  onClick?: () => void;
-};
 
 export const Close = ({
   color = "currentColor",
   size = 24,
   onClick,
-}: CloseProps) => (
+}: SvgProps) => (
   <svg
+    style={{ cursor: "pointer" }}
     width={size}
     onClick={onClick}
     height={size}
@@ -55,3 +65,24 @@ export const Close = ({
     />
   </svg>
 );
+
+export const Edit = ({
+  color = "currentColor",
+  size = 24,
+  onClick,
+}: SvgProps) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      onClick={onClick}
+      height={size}
+      viewBox="0 0 32 32"
+      style={{ cursor: "pointer" }}>
+      <path
+        fill="white"
+        d="M2 26h28v2H2zM25.4 9c.8-.8.8-2 0-2.8l-3.6-3.6c-.8-.8-2-.8-2.8 0l-15 15V24h6.4zm-5-5L24 7.6l-3 3L17.4 7zM6 22v-3.6l10-10l3.6 3.6l-10 10z"
+      />
+    </svg>
+  );
+};

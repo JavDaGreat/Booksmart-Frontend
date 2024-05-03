@@ -5,13 +5,16 @@
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: white;
-  border: none;
+  border: 1px solid white;
   border-radius: 4px;
   max-height: 566px;
   box-shadow: 0px 0px 8px 0px #21243114;
 
   &::backdrop {
     background: hsl(0 0% 0% / 40%);
+  }
+  &:focus-within {
+    outline: none;
   }
 
   .headerWrapper {
@@ -26,17 +29,9 @@
 
   .childWrapper {
     width: 100%;
-    padding: 32px;
+    padding: 16px;
     max-height: 390px;
     overflow: auto;
     word-break: keep-all;
-  }
-
-  .actionBar {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    padding: 24px;
-    align-items: center;
   }
 }
