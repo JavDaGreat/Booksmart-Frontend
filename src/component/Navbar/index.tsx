@@ -3,7 +3,10 @@ import { FC } from "react";
 import styles from "./styles.module.css";
 import { useRouter } from "next/navigation";
 
-export const Navbar: FC = () => {
+type Props = {
+  onLogin: () => void;
+};
+export const Navbar: FC<Props> = ({ onLogin }) => {
   const { push } = useRouter();
   return (
     <nav className={styles.container}>
@@ -17,7 +20,7 @@ export const Navbar: FC = () => {
       </ul>
       <ul className={styles.navList}>
         <li>Get Started</li>
-        <li>Login</li>
+        <li onClick={onLogin}>Login</li>
       </ul>
     </nav>
   );

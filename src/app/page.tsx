@@ -1,11 +1,14 @@
-import { Button, Card, Footer, Navbar } from "@component";
+"use client";
+import { Button, Card, Footer, Input, Modal, Navbar } from "@component";
 import Image from "next/image";
 import landingPagePic from "@/assets/Calendar.webp";
 import styles from "./page.module.css";
+import { useState } from "react";
 export default function Home() {
+  const [showModal, setShowModal] = useState(false);
   return (
     <main className={styles.main}>
-      <Navbar />
+      <Navbar onLogin={() => setShowModal((prev) => !prev)} />
       <div className={styles.container}>
         <div className={styles.textContainer}>
           <h1>Simplify the Way You Schedule Meetings </h1>
@@ -26,13 +29,22 @@ export default function Home() {
           />
         </div>
       </div>
-
       <div className={styles.cards}>
         <Card title="Free" />
         <Card title="Pro" />
       </div>
-
       <Footer />
+      <Modal
+        title="Login"
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}>
+        <Input type="text" label="Email" />
+        <Input label="Password" type="password" />
+        <div className={styles.loginButton}>
+          <p>Forget Password</p>
+          <Button label="Login" />
+        </div>
+      </Modal>
     </main>
   );
 }
