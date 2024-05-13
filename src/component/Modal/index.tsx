@@ -13,6 +13,7 @@ type Props = {
   isOpen: boolean;
   onEdit?: () => void;
   onDelete?: () => void;
+  onSave?: () => void;
   type?: string;
 };
 
@@ -23,6 +24,7 @@ export const Modal: FC<Props> = ({
   isOpen,
   onEdit,
   onDelete,
+  onSave,
   type,
 }) => {
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -37,15 +39,16 @@ export const Modal: FC<Props> = ({
         <div className={styles.header}>
           <h2>{title}</h2>
           <div className={styles.iconWrapper}>
-            {(type === "show" || type === "new") && <Edit onClick={onEdit} />}
+            {type === "show" && <Edit onClick={onEdit} />}
             <Close onClick={onClose} />
           </div>
         </div>
       </div>
       <div className={styles.childWrapper}>{children}</div>
       <div className={styles.actionBar}>
-        <Button onClick={onDelete} label="Delete" />
+        {type === "show" && <Button onClick={onDelete} label="Delete" />}
         {type === "edit" && <Button onClick={onEdit} label="Edit" />}
+        {type === "new" && <Button label="Save" onClick={onSave} />}
       </div>
     </dialog>
   );

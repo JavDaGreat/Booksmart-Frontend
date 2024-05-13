@@ -2,7 +2,14 @@ import { FC, InputHTMLAttributes } from "react";
 import styles from "./styles.module.css";
 
 type Props = {
-  type: "text" | "password" | "email" | "number" | "tel" | "textarea";
+  type:
+    | "text"
+    | "password"
+    | "email"
+    | "number"
+    | "tel"
+    | "textarea"
+    | "datetime-local";
   label?: string;
 } & InputHTMLAttributes<HTMLInputElement>;
 
