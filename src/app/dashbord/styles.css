@@ -10,3 +10,11 @@
 .rbc-event {
   background-color: rgb(120, 120, 243) !important;
 }
+.rbc-day-bg:hover {
+  cursor: pointer;
+}
+.existingEventContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}

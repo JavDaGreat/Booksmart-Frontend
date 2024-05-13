@@ -47,7 +47,7 @@ export const Modal: FC<Props> = ({
       <div className={styles.childWrapper}>{children}</div>
       <div className={styles.actionBar}>
         {type === "show" && <Button onClick={onDelete} label="Delete" />}
-        {type === "edit" && <Button onClick={onEdit} label="Edit" />}
+        {type === "edit" && <Button onClick={onSave} label="Save" />}
         {type === "new" && <Button label="Save" onClick={onSave} />}
       </div>
     </dialog>

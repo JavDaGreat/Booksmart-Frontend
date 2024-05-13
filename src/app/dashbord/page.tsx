@@ -16,11 +16,11 @@ type Event = {
   Guests?: string[];
 };
 
-type ModalType = "new" | "edit" | "show" | null;
+type ModalType = "new" | "edit" | "existingEvent" | null;
 
 export default function Page() {
   const localizer = dayjsLocalizer(dayjs);
-  const [eventDetails, setEventDetails] = useState({
+  const [eventDetails, setEventDetails] = useState<Event>({
     title: "",
     desc: "",
     Creator: "",
@@ -29,19 +29,27 @@ export default function Page() {
     end: new Date(),
   });
   const [showModal, setShowModal] = useState<ModalType>(null);
-  const [time, setTime] = useState();
+  const [time, setTime] = useState("");
   const [calEvent, setCalEvent] = useState<Event | null>(null);
   const [myEvents, setEvents] = useState<Event[]>([
     {
       id: 2,
       title: "Team lead meeting",
+      Guests: ["John", "Jane", "Doe"],
       start: new Date(2024, 4, 4, 8, 30, 0),
       end: new Date(2024, 4, 4, 12, 30, 0),
+      desc: "Discuss the new project",
+      Creator: "John",
     },
   ]);
+  const guestsList = [
+    "guest1@example.com",
+    "guest2@example.com",
+    "guest3@example.com",
+  ];
 
   const test = (calEvent: Event) => {
-    setShowModal("show");
+    setShowModal("existingEvent");
     setCalEvent(calEvent);
   };
   const onSave = useCallback(() => {
@@ -51,26 +59,28 @@ export default function Page() {
   }, [eventDetails]);
 
   const modalConfig = {
-    show: {
+    existingEvent: {
       title: calEvent?.title,
       children: (
-        <>
+        <div className="existingEventContainer">
           <p>{`${dayjs(calEvent?.start).format(
             "dddd, MMMM D ⋅ h:mm A"
           )} - ${dayjs(calEvent?.end).format("h:mm A")}`}</p>
+
           <p>{calEvent?.desc}</p>
           <h3>Guests:</h3>
-          <ul>
-            {calEvent?.Guests?.map((guest, index) => (
-              <li key={index}>{guest}</li>
-            ))}
-          </ul>
-          <h3>Created By:</h3>
-          <span>{calEvent?.Creator}</span>
-        </>
+
+          {calEvent?.Guests?.map((guest, index) => (
+            <li key={index}>{guest}</li>
+          ))}
+          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <p>Created By:</p>
+            <span>{calEvent?.Creator}</span>
+          </div>
+        </div>
       ),
       onClose: () => setShowModal(null),
-      isOpen: showModal === "show",
+      isOpen: showModal === "existingEvent",
       onEdit: () => setShowModal("edit"),
       type: "show",
     },
@@ -78,7 +88,74 @@ export default function Page() {
       title: "Edit Event",
       children: (
         <>
-          <Input label="Title" type="text" value={calEvent?.title} />
+          <Input
+            label="Title"
+            type="text"
+            defaultValue={calEvent?.title}
+            onChange={(e) =>
+              setEventDetails({ ...eventDetails, title: e.target.value })
+            }
+          />
+          <Input
+            list="guests"
+            label="Guests"
+            type="text"
+            placeholder="Add by email"
+            defaultValue={calEvent?.Guests}
+            add
+            onChange={(e) =>
+              setEventDetails({
+                ...eventDetails,
+                Guests: [e.target.value],
+              })
+            }
+          />
+
+          <datalist id="guests">
+            {guestsList.map((guest, index) => (
+              <option key={index} value={guest} />
+            ))}
+          </datalist>
+
+          <Input
+            label="Start"
+            type="datetime-local"
+            defaultValue={
+              calEvent?.start
+                ? calEvent?.start.toISOString().substring(0, 16)
+                : undefined
+            }
+            onChange={(e) => {
+              setEventDetails({
+                ...eventDetails,
+                start: new Date(e.target.value),
+              });
+            }}
+          />
+
+          <Input
+            label="End"
+            type="datetime-local"
+            defaultValue={
+              calEvent?.end
+                ? calEvent?.end.toISOString().substring(0, 16)
+                : undefined
+            }
+            onChange={(e) =>
+              setEventDetails({
+                ...eventDetails,
+                end: new Date(e.target.value),
+              })
+            }
+          />
+          <Input
+            label="Description"
+            type="textarea"
+            defaultValue={calEvent?.desc}
+            onChange={(e) =>
+              setEventDetails({ ...eventDetails, desc: e.target.value })
+            }
+          />
         </>
       ),
       onClose: () => setShowModal(null),
@@ -96,20 +173,15 @@ export default function Page() {
               setEventDetails({ ...eventDetails, title: e.target.value })
             }
           />
-          <Input
-            label="Description"
-            type="textarea"
-            onChange={(e) =>
-              setEventDetails({ ...eventDetails, desc: e.target.value })
-            }
-          />
+
           <Input
             label="Guests"
             type="text"
+            placeholder="Add by email"
             onChange={(e) =>
               setEventDetails({
                 ...eventDetails,
-                // Guests: [e.target.value],
+                Guests: [e.target.value],
               })
             }
           />
@@ -119,7 +191,7 @@ export default function Page() {
             value={time}
             onChange={(e) => {
               const newTime = e.target.value;
-              // setTime(newTime);
+              setTime(newTime);
               setEventDetails({
                 ...eventDetails,
                 start: new Date(newTime),
@@ -134,6 +206,13 @@ export default function Page() {
                 ...eventDetails,
                 end: new Date(e.target.value),
               })
+            }
+          />
+          <Input
+            label="Description"
+            type="textarea"
+            onChange={(e) =>
+              setEventDetails({ ...eventDetails, desc: e.target.value })
             }
           />
         </>
@@ -151,7 +230,7 @@ export default function Page() {
     console.log(info.start);
 
     const formattedDate = dayjs(info.start).format("YYYY-MM-DDTHH:mm");
-    // setTime(formattedDate);
+    setTime(formattedDate);
   };
 
   return (
@@ -173,7 +252,7 @@ export default function Page() {
       <div className="footerWrapper">
         <Footer />
       </div>
-      {/* <Modal {...modalProps} /> */}
+      {modalProps && <Modal {...modalProps} />}
     </div>
   );
 }
