@@ -5,6 +5,8 @@ import { Button } from "../Button";
 import { Input } from "../Input";
 import { useSearchParams } from "next/navigation";
 import { SignUpForm } from "@/app/signup/page";
+import { createAccount } from "@/lib/Api/Login";
+import { useRouter } from "next/navigation";
 type Props = {
   setSignUpForm: (
     value: SignUpForm | ((prevState: SignUpForm) => SignUpForm)
@@ -14,6 +16,7 @@ type Props = {
 
 export const Form: FC<Props> = ({ setSignUpForm, signUpForm }) => {
   const query = useSearchParams();
+  const { push } = useRouter();
   const defaultTierPlan = query.get("tierPlan") || "Free";
 
   const handleInputChanges = (
@@ -28,12 +31,20 @@ export const Form: FC<Props> = ({ setSignUpForm, signUpForm }) => {
     );
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (signUpForm?.password !== signUpForm?.confirmPassword) {
       alert("Password and Confirm Password do not match");
       return;
     }
+    const userCreation = await createAccount(signUpForm);
+    console.log(userCreation);
+
+    if (userCreation instanceof Error) {
+      alert(userCreation.message);
+      return;
+    }
+    push("/");
   };
 
   return (
@@ -47,7 +58,6 @@ export const Form: FC<Props> = ({ setSignUpForm, signUpForm }) => {
           name="tierPlan"
           label="Free"
           value={"Free"}
-          checked={defaultTierPlan === "Free"}
           onChange={handleInputChanges}
         />
         <Input
@@ -55,7 +65,6 @@ export const Form: FC<Props> = ({ setSignUpForm, signUpForm }) => {
           name="tierPlan"
           label="Pro"
           value={"Pro"}
-          checked={defaultTierPlan === "Pro"}
           onChange={handleInputChanges}
         />
       </div>
@@ -77,7 +86,9 @@ export const Form: FC<Props> = ({ setSignUpForm, signUpForm }) => {
           label="Password"
           name="password"
           onChange={handleInputChanges}
+          placeholder="Min 8 chars, 1 uppercase"
         />
+
         <Input
           type="password"
           label="Confirm Password"
@@ -98,6 +109,8 @@ export const Form: FC<Props> = ({ setSignUpForm, signUpForm }) => {
       </div>
 
       <Button label="Submit" />
+
+      <p></p>
     </form>
   );
 };

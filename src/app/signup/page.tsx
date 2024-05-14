@@ -10,6 +10,7 @@ export type SignUpForm =
       terms: boolean;
       confirmPassword: string;
       companyName?: string;
+      tierPlan: "Free" | "Pro";
       companyId?: string;
     }
   | undefined;

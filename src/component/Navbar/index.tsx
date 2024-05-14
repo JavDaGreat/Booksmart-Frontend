@@ -2,14 +2,26 @@
 import { FC, useState } from "react";
 import styles from "./styles.module.css";
 import { useRouter } from "next/navigation";
-import { Modal } from "../Modal";
-import { Input } from "../Input";
-import { Button } from "../Button";
+import { Input, Button, Modal } from "@component";
+import useUserStore from "@/lib/store";
 
 type Props = {};
 export const Navbar: FC<Props> = () => {
+  const { user, clearUser } = useUserStore();
+
   const { push } = useRouter();
   const [showModal, setShowModal] = useState(false);
+  console.log(user);
+
+  const handleAuthentication = () => {
+    if (user?.name) {
+      clearUser();
+      window.location.reload();
+    }
+    if (Object.keys(user).length === 0) {
+      setShowModal((prev) => !prev);
+    }
+  };
 
   return (
     <nav className={styles.container}>
@@ -22,7 +34,10 @@ export const Navbar: FC<Props> = () => {
         <li onClick={() => push("/")}>Contact</li>
       </ul>
       <ul className={styles.navList}>
-        <li onClick={() => setShowModal((prev) => !prev)}>Login</li>
+        <Button
+          label={user?.name ? "Logout" : "Login"}
+          onClick={() => handleAuthentication()}
+        />
       </ul>
       <Modal
         title="Login"

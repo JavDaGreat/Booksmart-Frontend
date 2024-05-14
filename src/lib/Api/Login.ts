@@ -1,73 +1,44 @@
-type Register = {
-  name: string;
-  email: string;
-  tirePlan: string;
-  password: string;
-  companyId?: string;
-  companyName?: string;
-};
-
-type Login = Pick<Register, "email" | "password">;
+import { SignUpForm } from "@/app/signup/page";
+import useUserStore from "@/lib/store";
 
 const login = async (email: string, password: string) => {
-  try {
-    const response = await fetch(
-      "https://booksmart-backend.onrender.com/login",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      }
-    );
+  const response = await fetch("https://booksmart-backend.onrender.com/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("A problem occurred with the fetch operation: ", error);
-    throw error;
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
   }
+
+  return await response.json();
 };
 
-const Register = async (
-  name: string,
-  email: string,
-  password: string,
-  tierPlan: string,
-  companyId?: string,
-  companyName?: string
-) => {
-  try {
-    const response = await fetch(
-      "https://booksmart-backend.onrender.com/register",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-          name,
-          tierPlan,
-          companyId,
-          companyName,
-        }),
-      }
-    );
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+const createAccount = async (signUpForm: SignUpForm) => {
+  console.log(signUpForm);
 
-    return await response.json();
-  } catch (error) {
-    console.error("A problem occurred with the fetch operation: ", error);
-    throw error;
+  const response = await fetch(
+    "https://booksmart-backend.onrender.com/register",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(signUpForm),
+    }
+  );
+
+  if (!response.ok) {
+    const responseBody = await response.json();
+    const serverErrorMessage = responseBody.message;
+    return new Error(serverErrorMessage);
   }
+  const data = await response.json();
+  useUserStore.getState().setUser(data);
+  return data;
 };
 
-export { login, Register };
+export { login, createAccount };
