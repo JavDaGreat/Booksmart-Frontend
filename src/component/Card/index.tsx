@@ -1,6 +1,8 @@
+"use client";
 import { Button } from "@component";
 import styles from "./styles.module.css";
 import { FC } from "react";
+import { useRouter } from "next/navigation";
 
 type Props = {
   title: "Pro" | "Free";
@@ -32,6 +34,7 @@ const freeDetails = {
 
 export const Card: FC<Props> = ({ title }) => {
   const details = title === "Pro" ? proDetails : freeDetails;
+  const { push } = useRouter();
 
   return (
     <div className={styles.cardContainer}>
@@ -41,7 +44,10 @@ export const Card: FC<Props> = ({ title }) => {
         <h2>{details.price}</h2>
         <p>/month</p>
       </div>
-      <Button label={details.buttonText} />
+      <Button
+        label={details.buttonText}
+        onClick={() => push(`/signup?tierPlan=${title}`)}
+      />
       <ul className={styles.cardBenefits}>
         {details.benefits.map((benefit, index) => (
           <li key={index}>{benefit}</li>

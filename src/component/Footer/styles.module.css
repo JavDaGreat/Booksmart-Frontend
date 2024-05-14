@@ -6,8 +6,6 @@
   color: white;
   padding: 16px;
   background-color: rgb(120, 120, 243);
-  position: fixed;
-  bottom: 0;
 }
 .links {
   display: flex;

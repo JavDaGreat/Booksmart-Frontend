@@ -18,6 +18,7 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  line-height: 1.6;
 }
 
 .LandingPageImageWrapper img {
@@ -33,6 +34,26 @@
   gap: 64px;
   justify-content: center;
   align-items: center;
+  padding-bottom: 200px;
+}
+.link {
+  color: rgb(120, 120, 243);
+  font-weight: 800;
+  text-decoration: none;
+  text-align: center;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+.introductionContainer {
+  margin: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  line-height: 1.6;
+  border-left: 10px solid rgb(120, 120, 243);
+  border-right: 10px solid rgb(120, 120, 243);
 }
 
 @media screen and (max-width: 768px) {
@@ -49,11 +70,4 @@
   .cards {
     flex-direction: column;
   }
-}
-.loginButton {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
 }

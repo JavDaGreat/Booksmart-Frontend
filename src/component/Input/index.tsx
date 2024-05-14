@@ -9,6 +9,7 @@ type Props = {
     | "number"
     | "tel"
     | "textarea"
+    | "radio"
     | "datetime-local";
   label?: string;
   add?: boolean;
@@ -20,7 +21,13 @@ export const Input: FC<Props> = ({ label, add, type, ...props }) => {
   return (
     <div className={styles.container}>
       {label && <label>{label}:</label>}
-      <InputElement {...props} type={type} className={styles.input} rows={4} />
+      <InputElement
+        {...props}
+        type={type}
+        className={styles.input}
+        rows={4}
+        required
+      />
     </div>
   );
 };
