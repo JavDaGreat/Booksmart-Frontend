@@ -44,10 +44,7 @@ export const Card: FC<Props> = ({ title }) => {
         <h2>{details.price}</h2>
         <p>/month</p>
       </div>
-      <Button
-        label={details.buttonText}
-        onClick={() => push(`/signup?tierPlan=${title}`)}
-      />
+      <Button label={details.buttonText} onClick={() => push(`/signup`)} />
       <ul className={styles.cardBenefits}>
         {details.benefits.map((benefit, index) => (
           <li key={index}>{benefit}</li>

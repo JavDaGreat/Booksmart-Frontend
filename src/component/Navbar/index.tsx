@@ -4,23 +4,36 @@ import styles from "./styles.module.css";
 import { useRouter } from "next/navigation";
 import { Input, Button, Modal } from "@component";
 import useUserStore from "@/lib/store";
+import { login } from "@/lib/Api/Login";
 
 type Props = {};
 export const Navbar: FC<Props> = () => {
   const { user, clearUser } = useUserStore();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const { push } = useRouter();
   const [showModal, setShowModal] = useState(false);
-  console.log(user);
 
   const handleAuthentication = () => {
     if (user?.name) {
       clearUser();
-      window.location.reload();
+      push("/");
     }
     if (Object.keys(user).length === 0) {
       setShowModal((prev) => !prev);
     }
+  };
+  const handleLogin = async () => {
+    const userLogin = await login(email, password);
+    if (userLogin instanceof Error) {
+      setError(userLogin.message);
+      return;
+    }
+    setEmail("");
+    setShowModal(false);
+    push("/dashbord");
   };
 
   return (
@@ -34,6 +47,7 @@ export const Navbar: FC<Props> = () => {
         <li onClick={() => push("/")}>Contact</li>
       </ul>
       <ul className={styles.navList}>
+        {user?.name && <li>{user?.name}</li>}
         <Button
           label={user?.name ? "Logout" : "Login"}
           onClick={() => handleAuthentication()}
@@ -42,12 +56,23 @@ export const Navbar: FC<Props> = () => {
       <Modal
         title="Login"
         isOpen={showModal}
-        onClose={() => setShowModal(false)}>
-        <Input type="text" label="Email" />
-        <Input label="Password" type="password" />
+        onClose={() => {
+          setShowModal(false), setError("");
+        }}>
+        <Input
+          type="text"
+          label="Email"
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <Input
+          label="Password"
+          type="password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
         <div className={styles.loginButton}>
           <p>Forget Password</p>
-          <Button label="Login" />
+          <Button label="Login" onClick={() => handleLogin()} />
+          {error && <p style={{ color: "red" }}>{error}</p>}
         </div>
       </Modal>
     </nav>

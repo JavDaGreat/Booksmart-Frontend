@@ -3,7 +3,6 @@ import { FC } from "react";
 import styles from "./styles.module.css";
 import { Button } from "../Button";
 import { Input } from "../Input";
-import { useSearchParams } from "next/navigation";
 import { SignUpForm } from "@/app/signup/page";
 import { createAccount } from "@/lib/Api/Login";
 import { useRouter } from "next/navigation";
@@ -15,9 +14,7 @@ type Props = {
 };
 
 export const Form: FC<Props> = ({ setSignUpForm, signUpForm }) => {
-  const query = useSearchParams();
   const { push } = useRouter();
-  const defaultTierPlan = query.get("tierPlan") || "Free";
 
   const handleInputChanges = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>

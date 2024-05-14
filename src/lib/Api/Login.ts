@@ -11,10 +11,16 @@ const login = async (email: string, password: string) => {
   });
 
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const responseBody = await response.json();
+    const serverErrorMessage = responseBody.message;
+    return new Error(serverErrorMessage);
   }
 
-  return await response.json();
+  const data = await response.json();
+  console.log(data);
+
+  useUserStore.getState().setUser(data);
+  return data;
 };
 
 const createAccount = async (signUpForm: SignUpForm) => {
