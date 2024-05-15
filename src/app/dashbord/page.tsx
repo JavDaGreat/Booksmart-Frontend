@@ -3,31 +3,37 @@ import { Footer, Navbar, Modal, Input } from "@/component";
 import { Calendar, dayjsLocalizer } from "react-big-calendar";
 import dayjs from "dayjs";
 import "react-big-calendar/lib/sass/styles.scss";
-import { useCallback, useState } from "react";
+import { use, useCallback, useState } from "react";
 import "./styles.css";
+import { createEvent } from "@/lib/Api/PostFunctions";
+import useUserStore from "@/lib/store";
 
-type Event = {
+export type Event = {
   id?: number;
   title: string;
   start: Date;
   end: Date;
-  desc?: string;
-  Creator?: string;
-  Guests?: string[];
+  description?: string;
+  createdBy?: string;
+  authorizedUsers?: string[];
+  companyId?: string;
 };
 
 type ModalType = "new" | "edit" | "existingEvent" | null;
 
 export default function Page() {
   const localizer = dayjsLocalizer(dayjs);
+  const { user } = useUserStore();
   const [eventDetails, setEventDetails] = useState<Event>({
     title: "",
-    desc: "",
-    Creator: "",
-    Guests: [],
+    description: "",
+    createdBy: "",
+    authorizedUsers: [],
     start: new Date(),
     end: new Date(),
+    companyId: "",
   });
+
   const [showModal, setShowModal] = useState<ModalType>(null);
   const [time, setTime] = useState("");
   const [calEvent, setCalEvent] = useState<Event | null>(null);
@@ -35,11 +41,11 @@ export default function Page() {
     {
       id: 2,
       title: "Team lead meeting",
-      Guests: ["John", "Jane", "Doe"],
+      authorizedUsers: ["John", "Jane", "Doe"],
       start: new Date(2024, 4, 4, 8, 30, 0),
       end: new Date(2024, 4, 4, 12, 30, 0),
-      desc: "Discuss the new project",
-      Creator: "John",
+      description: "Discuss the new project",
+      createdBy: "John",
     },
   ]);
   const guestsList = [
@@ -54,8 +60,10 @@ export default function Page() {
   };
   const onSave = useCallback(() => {
     setEvents((prevEvents) => [...prevEvents, eventDetails]);
+
     setShowModal(null);
-    console.log(eventDetails);
+
+    createEvent(eventDetails, user.accessToken);
   }, [eventDetails]);
 
   const modalConfig = {
@@ -67,15 +75,15 @@ export default function Page() {
             "dddd, MMMM D ⋅ h:mm A"
           )} - ${dayjs(calEvent?.end).format("h:mm A")}`}</p>
 
-          <p>{calEvent?.desc}</p>
+          <p>{calEvent?.description}</p>
           <h3>Guests:</h3>
 
-          {calEvent?.Guests?.map((guest, index) => (
+          {calEvent?.authorizedUsers?.map((guest, index) => (
             <li key={index}>{guest}</li>
           ))}
           <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
             <p>Created By:</p>
-            <span>{calEvent?.Creator}</span>
+            <span>{calEvent?.createdBy}</span>
           </div>
         </div>
       ),
@@ -93,7 +101,10 @@ export default function Page() {
             type="text"
             defaultValue={calEvent?.title}
             onChange={(e) =>
-              setEventDetails({ ...eventDetails, title: e.target.value })
+              setEventDetails({
+                ...eventDetails,
+                title: e.target.value,
+              })
             }
           />
           <Input
@@ -101,12 +112,12 @@ export default function Page() {
             label="Guests"
             type="text"
             placeholder="Add by email"
-            defaultValue={calEvent?.Guests}
+            defaultValue={calEvent?.authorizedUsers}
             add
             onChange={(e) =>
               setEventDetails({
                 ...eventDetails,
-                Guests: [e.target.value],
+                authorizedUsers: [e.target.value],
               })
             }
           />
@@ -151,9 +162,12 @@ export default function Page() {
           <Input
             label="Description"
             type="textarea"
-            defaultValue={calEvent?.desc}
+            defaultValue={calEvent?.description}
             onChange={(e) =>
-              setEventDetails({ ...eventDetails, desc: e.target.value })
+              setEventDetails({
+                ...eventDetails,
+                description: e.target.value,
+              })
             }
           />
         </>
@@ -181,7 +195,7 @@ export default function Page() {
             onChange={(e) =>
               setEventDetails({
                 ...eventDetails,
-                Guests: [e.target.value],
+                authorizedUsers: [e.target.value],
               })
             }
           />
@@ -212,7 +226,7 @@ export default function Page() {
             label="Description"
             type="textarea"
             onChange={(e) =>
-              setEventDetails({ ...eventDetails, desc: e.target.value })
+              setEventDetails({ ...eventDetails, description: e.target.value })
             }
           />
         </>

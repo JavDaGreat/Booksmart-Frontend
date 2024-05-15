@@ -5,9 +5,10 @@ type User = {
   email: string;
   password: string;
   isAdmin: boolean;
-  _id: string;
+  id: string;
   companyId?: string;
   companyName?: string;
+  accessToken: string;
 };
 
 type UserStore = {
