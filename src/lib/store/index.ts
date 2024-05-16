@@ -9,6 +9,7 @@ type User = {
   companyId?: string;
   companyName?: string;
   accessToken: string;
+  colleagues?: string[];
 };
 
 type UserStore = {

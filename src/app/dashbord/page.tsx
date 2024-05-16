@@ -3,10 +3,11 @@ import { Footer, Navbar, Modal, Input } from "@/component";
 import { Calendar, dayjsLocalizer } from "react-big-calendar";
 import dayjs from "dayjs";
 import "react-big-calendar/lib/sass/styles.scss";
-import { use, useCallback, useState } from "react";
+import { useCallback, useState, useEffect, use } from "react";
 import "./styles.css";
 import { createEvent } from "@/lib/Api/PostFunctions";
 import useUserStore from "@/lib/store";
+import { getAllEvents } from "@/lib/Api/GetFunctions";
 
 export type Event = {
   id?: number;
@@ -37,22 +38,22 @@ export default function Page() {
   const [showModal, setShowModal] = useState<ModalType>(null);
   const [time, setTime] = useState("");
   const [calEvent, setCalEvent] = useState<Event | null>(null);
-  const [myEvents, setEvents] = useState<Event[]>([
-    {
-      id: 2,
-      title: "Team lead meeting",
-      authorizedUsers: ["John", "Jane", "Doe"],
-      start: new Date(2024, 4, 4, 8, 30, 0),
-      end: new Date(2024, 4, 4, 12, 30, 0),
-      description: "Discuss the new project",
-      createdBy: "John",
-    },
-  ]);
-  const guestsList = [
-    "guest1@example.com",
-    "guest2@example.com",
-    "guest3@example.com",
-  ];
+  const [myEvents, setEvents] = useState<Event[]>([]);
+  const [test1, setTest1] = useState("");
+  const guestsList = user.colleagues || [];
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      const events = await getAllEvents(user.id, user.accessToken);
+      const formattedEvents = events.map((event: Event) => ({
+        ...event,
+        start: new Date(event.start),
+        end: new Date(event.end),
+      }));
+      setEvents(formattedEvents);
+    };
+    fetchEvents();
+  }, [user]);
 
   const test = (calEvent: Event) => {
     setShowModal("existingEvent");
@@ -60,9 +61,7 @@ export default function Page() {
   };
   const onSave = useCallback(() => {
     setEvents((prevEvents) => [...prevEvents, eventDetails]);
-
     setShowModal(null);
-
     createEvent(eventDetails, user.accessToken);
   }, [eventDetails]);
 
@@ -121,7 +120,6 @@ export default function Page() {
               })
             }
           />
-
           <datalist id="guests">
             {guestsList.map((guest, index) => (
               <option key={index} value={guest} />
@@ -143,7 +141,6 @@ export default function Page() {
               });
             }}
           />
-
           <Input
             label="End"
             type="datetime-local"
@@ -191,6 +188,7 @@ export default function Page() {
           <Input
             label="Guests"
             type="text"
+            list="guests"
             placeholder="Add by email"
             onChange={(e) =>
               setEventDetails({
@@ -212,6 +210,7 @@ export default function Page() {
               });
             }}
           />
+
           <Input
             label="End"
             type="datetime-local"
@@ -241,7 +240,6 @@ export default function Page() {
 
   const addEvent = (info: any) => {
     setShowModal("new");
-    console.log(info.start);
 
     const formattedDate = dayjs(info.start).format("YYYY-MM-DDTHH:mm");
     setTime(formattedDate);

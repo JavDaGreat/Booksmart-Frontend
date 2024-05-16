@@ -12,11 +12,10 @@ type Props = {
     | "radio"
     | "datetime-local";
   label?: string;
-  add?: boolean;
 } & InputHTMLAttributes<HTMLInputElement> &
   TextareaHTMLAttributes<HTMLTextAreaElement>;
 
-export const Input: FC<Props> = ({ label, add, type, ...props }) => {
+export const Input: FC<Props> = ({ label, type, ...props }) => {
   const InputElement = type === "textarea" ? "textarea" : "input";
   return (
     <div className={styles.container}>
