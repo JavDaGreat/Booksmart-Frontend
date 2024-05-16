@@ -112,7 +112,6 @@ export default function Page() {
             type="text"
             placeholder="Add by email"
             defaultValue={calEvent?.authorizedUsers}
-            add
             onChange={(e) =>
               setEventDetails({
                 ...eventDetails,
@@ -172,6 +171,7 @@ export default function Page() {
       onClose: () => setShowModal(null),
       isOpen: showModal === "edit",
       type: "edit",
+      onSave,
     },
     new: {
       title: "New Event",
