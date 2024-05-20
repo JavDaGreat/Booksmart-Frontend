@@ -9,7 +9,13 @@ export const getAllEvents = async (id: string, accessToken: string) => {
       },
     }
   );
+
+  if (response.status === 204) {
+    return [];
+  }
+
   const data = await response.json();
+
   console.log(data);
 
   return data;

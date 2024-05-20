@@ -5,12 +5,14 @@ import dayjs from "dayjs";
 import "react-big-calendar/lib/sass/styles.scss";
 import { useCallback, useState, useEffect, use } from "react";
 import "./styles.css";
-import { createEvent } from "@/lib/Api/PostFunctions";
+import { createEvent, deleteEvent, editEvent } from "@/lib/Api/PostFunctions";
 import useUserStore from "@/lib/store";
 import { getAllEvents } from "@/lib/Api/GetFunctions";
+import { Clock, Creator, Description, Guests } from "@/assets/icons";
+import { on } from "events";
 
 export type Event = {
-  id?: number;
+  _id?: string;
   title: string;
   start: Date;
   end: Date;
@@ -24,72 +26,136 @@ type ModalType = "new" | "edit" | "existingEvent" | null;
 
 export default function Page() {
   const localizer = dayjsLocalizer(dayjs);
+  const [calEvent, setCalEvent] = useState<Event | null>(null);
   const { user } = useUserStore();
   const [eventDetails, setEventDetails] = useState<Event>({
     title: "",
     description: "",
     createdBy: "",
     authorizedUsers: [],
-    start: new Date(),
+    start: calEvent?.start || new Date(),
     end: new Date(),
     companyId: "",
   });
 
   const [showModal, setShowModal] = useState<ModalType>(null);
   const [time, setTime] = useState("");
-  const [calEvent, setCalEvent] = useState<Event | null>(null);
   const [myEvents, setEvents] = useState<Event[]>([]);
-  const [test1, setTest1] = useState("");
   const guestsList = user.colleagues || [];
+  const fetchEvents = async () => {
+    const events = await getAllEvents(user.id, user.accessToken);
+    const formattedEvents = events.map((event: Event) => ({
+      ...event,
+      start: new Date(event.start),
+      end: new Date(event.end),
+    }));
+    setEvents(formattedEvents);
+  };
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      const events = await getAllEvents(user.id, user.accessToken);
-      const formattedEvents = events.map((event: Event) => ({
-        ...event,
-        start: new Date(event.start),
-        end: new Date(event.end),
-      }));
-      setEvents(formattedEvents);
-    };
     fetchEvents();
   }, [user]);
 
   const test = (calEvent: Event) => {
     setShowModal("existingEvent");
     setCalEvent(calEvent);
+    setEventDetails(calEvent);
   };
-  const onSave = useCallback(() => {
-    setEvents((prevEvents) => [...prevEvents, eventDetails]);
+
+  const saveNewEvent = useCallback(async () => {
     setShowModal(null);
-    createEvent(eventDetails, user.accessToken);
+    await createEvent(eventDetails, user.accessToken);
+    await fetchEvents();
+    setEventDetails({
+      title: "",
+      description: "",
+      createdBy: "",
+      authorizedUsers: [],
+      start: new Date(),
+      end: new Date(),
+      companyId: "",
+    });
   }, [eventDetails]);
+
+  const saveEditedEvent = useCallback(async () => {
+    setShowModal(null);
+    if (!calEvent) return;
+    await editEvent(
+      eventDetails,
+      user.isAdmin,
+      calEvent?._id || "",
+      user.id,
+      user.accessToken
+    );
+    await fetchEvents();
+  }, [eventDetails]);
+
+  const onClose = () => {
+    setShowModal(null);
+    setEventDetails({
+      title: "",
+      description: "",
+      createdBy: "",
+      authorizedUsers: [],
+      start: calEvent?.start || new Date(),
+      end: calEvent?.end || new Date(),
+      companyId: "",
+    });
+  };
+
+  const onDelete = async () => {
+    if (!eventDetails._id) return;
+    setShowModal(null);
+
+    await deleteEvent(
+      eventDetails._id,
+      user.accessToken,
+      user.isAdmin,
+      user.id
+    );
+    await fetchEvents();
+  };
 
   const modalConfig = {
     existingEvent: {
       title: calEvent?.title,
       children: (
         <div className="existingEventContainer">
-          <p>{`${dayjs(calEvent?.start).format(
-            "dddd, MMMM D ⋅ h:mm A"
-          )} - ${dayjs(calEvent?.end).format("h:mm A")}`}</p>
+          <p style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <Clock />
+            {`${dayjs(calEvent?.start).format(
+              "dddd, MMMM D ⋅ h:mm A"
+            )} - ${dayjs(calEvent?.end).format("h:mm A")}`}
+          </p>
+          <div
+            style={{
+              display: "flex",
+              listStyle: "none",
+              alignContent: "center",
+              gap: 4,
+            }}>
+            <Guests />
+            {calEvent?.authorizedUsers?.map((guest, index) => (
+              <li key={index}>{guest}</li>
+            ))}
+          </div>
 
-          <p>{calEvent?.description}</p>
-          <h3>Guests:</h3>
-
-          {calEvent?.authorizedUsers?.map((guest, index) => (
-            <li key={index}>{guest}</li>
-          ))}
           <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <p>Created By:</p>
+            <Description />
+            <p>{calEvent?.description}</p>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <Creator />
             <span>{calEvent?.createdBy}</span>
           </div>
         </div>
       ),
-      onClose: () => setShowModal(null),
+      onClose: () => onClose(),
       isOpen: showModal === "existingEvent",
       onEdit: () => setShowModal("edit"),
       type: "show",
+      onDelete: onDelete,
     },
     edit: {
       title: "Edit Event",
@@ -168,10 +234,11 @@ export default function Page() {
           />
         </>
       ),
-      onClose: () => setShowModal(null),
+      onClose: () => onClose(),
       isOpen: showModal === "edit",
       type: "edit",
-      onSave,
+      onSave: saveEditedEvent,
+      onDelete: onDelete,
     },
     new: {
       title: "New Event",
@@ -197,6 +264,11 @@ export default function Page() {
               })
             }
           />
+          <datalist id="guests">
+            {guestsList.map((guest, index) => (
+              <option key={index} value={guest} />
+            ))}
+          </datalist>
           <Input
             label="Start"
             type="datetime-local"
@@ -230,10 +302,10 @@ export default function Page() {
           />
         </>
       ),
-      onClose: () => setShowModal(null),
+      onClose: () => onClose(),
       isOpen: showModal === "new",
       type: "new",
-      onSave: onSave,
+      onSave: saveNewEvent,
     },
   };
   const modalProps = showModal && modalConfig[showModal];
