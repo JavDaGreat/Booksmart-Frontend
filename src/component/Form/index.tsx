@@ -47,7 +47,6 @@ export const Form: FC<Props> = ({ setSignUpForm, signUpForm }) => {
   return (
     <form className={styles.formContainer} onSubmit={handleSubmit}>
       <h1>Sign Up</h1>
-      <p>Get started with BookSmart today</p>
       <h3>Tier Plan</h3>
       <div className={styles.radioWrapper}>
         <Input
